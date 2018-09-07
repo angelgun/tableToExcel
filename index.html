@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>테이블 태그 엑셀 변환</title>
+</head>
+
+<body>
+
+  <h1>테이블tag 엑셀변환</h1>
+  <p>Exporting the W3C Example Table</p>
+
+  <textarea style="width: 500px;height: 300px;resize: none;"></textarea>
+  <div><input type="button" onclick="tableToExcel('', 'W3C Example Table')" value="엑셀변환"></div>
+
+  <p>변환하고자 하는 table tag를 박스 안에 넣고 변환 클릭</p>
+  <script>
+    const tableToExcel = (function () {
+      const uri = 'data:application/vnd.ms-excel;base64,',
+        template =
+          '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>{table}</body></html>',
+        base64 = function (str) {
+          return window.btoa(unescape(encodeURIComponent(str)));
+        },
+        format = function (template, ctx) {
+          return template.replace(/{(\w+)}/g, function (m, p) {
+            return ctx[p];
+          });
+        };
+      return function (table, name) {
+        table = document.querySelector('textarea');
+        if (!table.value) { alert('내용을 넣어주세요!'); return false }
+        if (!table.value.includes('<table>') && !table.value.includes('</table>')) { alert('<table> tag를 입력하세요!'); return false };
+        const ctx = { worksheet: name || 'Worksheet', table: table.value };
+        window.location.href = uri + base64(format(template, ctx));
+      };
+    })();
+  </script>
+</body>
+
+</html>
